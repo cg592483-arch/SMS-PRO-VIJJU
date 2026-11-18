@@ -1,1 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SMS PRO</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f0f0f;
+      color: #eee;
+      margin: 0;
+      padding: 16px;
+      line-height: 1.4;
+    }
+    h1, h2 { margin: 0 0 12px 0; font-weight: 600; }
+    h1 { font-size: 1.4rem; }
+    h2 { font-size: 1.15rem; margin-top: 24px; }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      width: 100%;
+      margin: 8px 0;
+    }
+    textarea, input {
+      width: 100%;
+      box-sizing: border-box;
+      background: #1c1c1c;
+      border: 1px solid #333;
+      color: #eee;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      margin: 6px 0 12px 0;
+    }
+    textarea { min-height: 100px; }
+    #nums { font-family: monospace; font-size: 14px; min-height: 180px; }
+    .row { display: flex; gap: 8px; }
+    .row button { flex: 1; background: #333; }
+    .small { font-size: 13px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <h1>SMS PRO</h1>
+  <p class="small">Indian number generator + SMS opener</p>
 
+  <h2>Number Generator</h2>
+  <button onclick="generate()">GENERATE 10 INDIA NUMBERS</button>
+  <div class="row">
+    <button onclick="copyNumbers()">Copy All</button>
+    <button onclick="clearNumbers()">Clear</button>
+  </div>
+  <textarea id="nums" readonly placeholder="Generated numbers will appear here..."></textarea>
+
+  <h2>Open SMS</h2>
+  <input type="tel" id="recipient" placeholder="Recipient number (e.g. +91...)">
+  <textarea id="message" placeholder="Type your message"></textarea>
+  <button onclick="openSMS()">OPEN SMS APP</button>
+
+  <script>
+    function generate() {
+      const a = [];
+      for (let i = 0; i < 10; i++) {
+        const firstDigit = Math.floor(Math.random() * 4) + 6;
+        let rest = "";
+        for (let j = 0; j < 9; j++) {
+          rest += Math.floor(Math.random() * 10);
+        }
+        a.push("+91 " + firstDigit + rest);
+      }
+      document.getElementById("nums").value = a.join("\n");
+    }
+
+    function copyNumbers() {
+      const text = document.getElementById("nums").value;
+      if (!text) {
+        alert("No numbers to copy");
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied!");
+      }).catch(() => {
+        const ta = document.getElementById("nums");
+        ta.select();
+        document.execCommand("copy");
+        alert("Copied!");
+      });
+    }
+
+    function clearNumbers() {
+      document.getElementById("nums").value = "";
+    }
+
+    function openSMS() {
+      const number = document.getElementById("recipient").value.trim();
+      const message = document.getElementById("message").value.trim();
+      if (!number) {
+        alert("Enter a recipient number");
+        return;
+      }
+      const url = "sms:" + encodeURIComponent(number) + (message ? "?body=" + encodeURIComponent(message) : "");
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>
